@@ -112,8 +112,8 @@
         .status-pending { background: var(--warning); }
         .status-completed { background: var(--success); }
 
-        .actions { display: flex; gap: 12px; justify-content: center; }
-        .action-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); transition: 0.2s; font-size: 1.1rem; }
+        .actions { display: flex; gap: 12px; justify-content: center; align-items: center; height: 100%; }
+        .action-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); transition: 0.2s; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
         .action-btn:hover { color: var(--primary); }
         .action-btn.delete:hover { color: var(--danger); }
         .action-btn.undo:hover { color: var(--warning); }
