@@ -13,6 +13,29 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch((err) => console.error('❌ Could not connect to MongoDB', err));
 
+// Task Schema & Model
+const taskSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: [true, 'Title is required'],
+        trim: true
+    },
+    description: {
+        type: String,
+        trim: true
+    },
+    completed: {
+        type: Boolean,
+        default: false
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+const Task = mongoose.model('Task', taskSchema);
+
 // Basic Route
 app.get('/', (req, res) => {
     res.send('Task Manager API is running!');
