@@ -78,6 +78,13 @@
         }
         .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
 
+        .btn-secondary { 
+            background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); 
+            padding: 12px 24px; border-radius: 10px; font-weight: 600; 
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-secondary:hover { background: #e2e8f0; border-color: #cbd5e1; }
+
         /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card { background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
@@ -254,7 +261,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal()">Dismiss</button>
+                <button class="btn-secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Dismiss
+                </button>
                 <button class="btn-primary" onclick="saveTask()">Confirm Changes</button>
             </div>
         </div>
