@@ -1,5 +1,6 @@
 const API_URL = '/tasks';
 let allTasks = [];
+let currentFilter = 'all';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', fetchTasks);
@@ -8,7 +9,7 @@ async function fetchTasks() {
     try {
         const res = await fetch(API_URL);
         allTasks = await res.json();
-        renderTasks(allTasks);
+        applyFilterAndSearch();
         updateStats(allTasks);
     } catch (err) {
         console.error('Failed to fetch tasks', err);
@@ -21,12 +22,40 @@ function updateStats(tasks) {
     document.getElementById('completedTasks').textContent = tasks.filter(t => t.completed).length;
 }
 
+function filterBy(filter) {
+    currentFilter = filter;
+    
+    // Update Active Link UI
+    document.querySelectorAll('.nav-links a').forEach(el => el.classList.remove('active'));
+    document.getElementById(`nav-${filter}`).classList.add('active');
+    
+    applyFilterAndSearch();
+}
+
 function handleSearch() {
+    applyFilterAndSearch();
+}
+
+function applyFilterAndSearch() {
     const query = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = allTasks.filter(task => 
-        task.title.toLowerCase().includes(query) || 
-        task._id.toLowerCase().includes(query)
-    );
+    
+    let filtered = allTasks;
+
+    // 1. Filter by Status (Sidebar)
+    if (currentFilter === 'pending') {
+        filtered = filtered.filter(t => !t.completed);
+    } else if (currentFilter === 'completed') {
+        filtered = filtered.filter(t => t.completed);
+    }
+
+    // 2. Filter by Search Query
+    if (query) {
+        filtered = filtered.filter(task => 
+            task.title.toLowerCase().includes(query) || 
+            task._id.toLowerCase().includes(query)
+        );
+    }
+
     renderTasks(filtered);
 }
 
@@ -35,7 +64,7 @@ function renderTasks(tasks) {
     tbody.innerHTML = '';
 
     if (tasks.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 3rem; color: var(--text-muted)">No tasks found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 3rem; color: var(--text-muted)">No tasks matching your criteria.</td></tr>`;
         return;
     }
 
@@ -46,7 +75,7 @@ function renderTasks(tasks) {
         row.innerHTML = `
             <td><span class="task-id">#${task._id.slice(-6)}</span></td>
             <td>
-                <div class="task-title">${task.title}</div>
+                <div class="task-title" style="${task.completed ? 'text-decoration: line-through; color: var(--text-muted)' : ''}">${task.title}</div>
                 <div class="task-desc">${task.description || 'N/A'}</div>
             </td>
             <td><span class="badge badge-${task.category.toLowerCase()}">${task.category}</span></td>
@@ -56,7 +85,9 @@ function renderTasks(tasks) {
             </td>
             <td style="font-size: 0.85rem; color: var(--text-muted)">${formattedDate}</td>
             <td class="actions">
-                ${!task.completed ? `<button class="action-btn" onclick="markComplete('${task._id}')" title="Complete"><i class="fas fa-check-circle" style="color: var(--success)"></i></button>` : ''}
+                <button class="action-btn ${task.completed ? 'undo' : ''}" onclick="toggleStatus('${task._id}')" title="${task.completed ? 'Undo' : 'Complete'}">
+                    <i class="fas ${task.completed ? 'fa-rotate-left' : 'fa-check-circle'}" style="color: ${task.completed ? 'var(--warning)' : 'var(--success)'}"></i>
+                </button>
                 <button class="action-btn" onclick="editTask('${task._id}')" title="Edit"><i class="fas fa-edit"></i></button>
                 <button class="action-btn delete" onclick="deleteTask('${task._id}')" title="Delete"><i class="fas fa-trash"></i></button>
             </td>
@@ -65,7 +96,16 @@ function renderTasks(tasks) {
     });
 }
 
-// Modal Logic
+async function toggleStatus(id) {
+    try {
+        const res = await fetch(`${API_URL}/${id}/toggle`, { method: 'PATCH' });
+        if (res.ok) fetchTasks();
+    } catch (err) {
+        console.error('Update error', err);
+    }
+}
+
+// Modal & Other functions remain similar but updated to call applyFilterAndSearch
 function openModal(editMode = false) {
     const modal = document.getElementById('taskModal');
     document.getElementById('modalTitle').textContent = editMode ? 'Edit Task Details' : 'Create New Task';
@@ -113,15 +153,6 @@ async function saveTask() {
         }
     } catch (err) {
         console.error('Save error', err);
-    }
-}
-
-async function markComplete(id) {
-    try {
-        const res = await fetch(`${API_URL}/${id}/complete`, { method: 'PATCH' });
-        if (res.ok) fetchTasks();
-    } catch (err) {
-        console.error('Update error', err);
     }
 }
 

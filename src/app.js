@@ -49,14 +49,15 @@ app.get('/tasks', async (req, res) => {
     }
 });
 
-app.patch('/tasks/:id/complete', async (req, res) => {
+// 3. TOGGLE task completion
+app.patch('/tasks/:id/toggle', async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) return res.status(404).json({ message: 'Task not found' });
-        if (task.completed) return res.status(400).json({ message: 'Task is already completed' });
-        task.completed = true;
+
+        task.completed = !task.completed; // Toggle status
         await task.save();
-        res.status(200).json({ message: 'Task marked as completed', task });
+        res.status(200).json({ message: `Task marked as ${task.completed ? 'completed' : 'pending'}`, task });
     } catch (error) {
         res.status(500).json({ message: 'Error updating task', error: error.message });
     }
