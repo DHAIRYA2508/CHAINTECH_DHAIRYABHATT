@@ -87,7 +87,8 @@
         table { width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed; }
         
         th { background: #f8fafc; padding: 16px 24px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
-        td { padding: 18px 24px; border-bottom: 1px solid var(--border); vertical-align: middle; word-wrap: break-word; }
+        tr { border-bottom: 1px solid var(--border); }
+        td { padding: 18px 24px; vertical-align: middle; word-wrap: break-word; }
         
         th:nth-child(1), td:nth-child(1) { width: 120px; } /* ID */
         th:nth-child(2), td:nth-child(2) { width: 35%; }  /* Details */
@@ -96,10 +97,10 @@
         th:nth-child(5), td:nth-child(5) { width: 140px; } /* Date */
         th:nth-child(6), td:nth-child(6) { width: 140px; text-align: center; } /* Actions */
 
-        tr:last-child td { border-bottom: none; }
+        tr:last-child { border-bottom: none; }
 
         .task-id { font-family: monospace; color: var(--text-muted); font-size: 0.8rem; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; }
-        .task-title { font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
+        .task-title { font-weight: 600; color: var(--text-main); margin-bottom: 4px; line-height: 1.2; }
         .task-desc { font-size: 0.85rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
         .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
@@ -112,8 +113,8 @@
         .status-pending { background: var(--warning); }
         .status-completed { background: var(--success); }
 
-        .actions { display: flex; gap: 12px; justify-content: center; align-items: center; height: 100%; }
-        .action-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); transition: 0.2s; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
+        .actions { display: flex; gap: 12px; justify-content: center; align-items: center; }
+        .action-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); transition: 0.2s; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; margin: 0; }
         .action-btn:hover { color: var(--primary); }
         .action-btn.delete:hover { color: var(--danger); }
         .action-btn.undo:hover { color: var(--warning); }
