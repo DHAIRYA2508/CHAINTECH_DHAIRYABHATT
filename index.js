@@ -36,6 +36,27 @@ const taskSchema = new mongoose.Schema({
 
 const Task = mongoose.model('Task', taskSchema);
 
+// ROUTES
+
+// 1. CREATE a new task
+app.post('/tasks', async (req, res) => {
+    try {
+        const { title, description } = req.body;
+        
+        // Basic validation: Title must not be empty
+        if (!title) {
+            return res.status(400).json({ message: 'Title is required' });
+        }
+
+        const newTask = new Task({ title, description });
+        await newTask.save(); // Save to MongoDB
+
+        res.status(201).json(newTask); // Send back the created task
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating task', error: error.message });
+    }
+});
+
 // Basic Route
 app.get('/', (req, res) => {
     res.send('Task Manager API is running!');
