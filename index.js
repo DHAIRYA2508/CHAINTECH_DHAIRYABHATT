@@ -42,14 +42,10 @@ const Task = mongoose.model('Task', taskSchema);
 app.post('/tasks', async (req, res) => {
     try {
         const { title, description } = req.body;
-        
-        if (!title) {
-            return res.status(400).json({ message: 'Title is required' });
-        }
+        if (!title) return res.status(400).json({ message: 'Title is required' });
 
         const newTask = new Task({ title, description });
         await newTask.save();
-
         res.status(201).json(newTask);
     } catch (error) {
         res.status(500).json({ message: 'Error creating task', error: error.message });
@@ -59,10 +55,55 @@ app.post('/tasks', async (req, res) => {
 // 2. READ all tasks
 app.get('/tasks', async (req, res) => {
     try {
-        const tasks = await Task.find().sort({ createdAt: -1 }); // Newest first
+        const tasks = await Task.find().sort({ createdAt: -1 });
         res.status(200).json(tasks);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching tasks', error: error.message });
+    }
+});
+
+// 3. MARK task as completed
+app.patch('/tasks/:id/complete', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
+        if (!task) return res.status(404).json({ message: 'Task not found' });
+        if (task.completed) return res.status(400).json({ message: 'Task is already completed' });
+
+        task.completed = true;
+        await task.save();
+        res.status(200).json({ message: 'Task marked as completed', task });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating task', error: error.message });
+    }
+});
+
+// 4. EDIT task (Title and/or Description)
+app.put('/tasks/:id', async (req, res) => {
+    try {
+        const { title, description } = req.body;
+        if (!title) return res.status(400).json({ message: 'Title cannot be empty' });
+
+        const updatedTask = await Task.findByIdAndUpdate(
+            req.params.id,
+            { title, description },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedTask) return res.status(404).json({ message: 'Task not found' });
+        res.status(200).json({ message: 'Task updated successfully', updatedTask });
+    } catch (error) {
+        res.status(500).json({ message: 'Error editing task', error: error.message });
+    }
+});
+
+// 5. DELETE task
+app.delete('/tasks/:id', async (req, res) => {
+    try {
+        const deletedTask = await Task.findByIdAndDelete(req.params.id);
+        if (!deletedTask) return res.status(404).json({ message: 'Task not found' });
+        res.status(200).json({ message: 'Task deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting task', error: error.message });
     }
 });
 
