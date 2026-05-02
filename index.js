@@ -43,17 +43,26 @@ app.post('/tasks', async (req, res) => {
     try {
         const { title, description } = req.body;
         
-        // Basic validation: Title must not be empty
         if (!title) {
             return res.status(400).json({ message: 'Title is required' });
         }
 
         const newTask = new Task({ title, description });
-        await newTask.save(); // Save to MongoDB
+        await newTask.save();
 
-        res.status(201).json(newTask); // Send back the created task
+        res.status(201).json(newTask);
     } catch (error) {
         res.status(500).json({ message: 'Error creating task', error: error.message });
+    }
+});
+
+// 2. READ all tasks
+app.get('/tasks', async (req, res) => {
+    try {
+        const tasks = await Task.find().sort({ createdAt: -1 }); // Newest first
+        res.status(200).json(tasks);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching tasks', error: error.message });
     }
 });
 
