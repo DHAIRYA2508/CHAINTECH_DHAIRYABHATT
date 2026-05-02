@@ -28,6 +28,14 @@ const taskSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    dueDate: {
+        type: Date
+    },
+    category: {
+        type: String,
+        enum: ['Work', 'Personal', 'Urgent', 'Others'],
+        default: 'Others'
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -41,10 +49,10 @@ const Task = mongoose.model('Task', taskSchema);
 // 1. CREATE a new task
 app.post('/tasks', async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const { title, description, dueDate, category } = req.body;
         if (!title) return res.status(400).json({ message: 'Title is required' });
 
-        const newTask = new Task({ title, description });
+        const newTask = new Task({ title, description, dueDate, category });
         await newTask.save();
         res.status(201).json(newTask);
     } catch (error) {
@@ -77,15 +85,14 @@ app.patch('/tasks/:id/complete', async (req, res) => {
     }
 });
 
-// 4. EDIT task (Title and/or Description)
+// 4. EDIT task
 app.put('/tasks/:id', async (req, res) => {
     try {
-        const { title, description } = req.body;
-        if (!title) return res.status(400).json({ message: 'Title cannot be empty' });
-
+        const { title, description, dueDate, category, completed } = req.body;
+        
         const updatedTask = await Task.findByIdAndUpdate(
             req.params.id,
-            { title, description },
+            { title, description, dueDate, category, completed },
             { new: true, runValidators: true }
         );
 
