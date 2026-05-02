@@ -6,6 +6,7 @@ const app = express();
 
 // Middleware to parse JSON
 app.use(express.json());
+app.use(express.static('public')); // Serve frontend files
 
 // Database Connection (Only connect if not testing)
 if (process.env.NODE_ENV !== 'test') {
