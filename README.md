@@ -1,73 +1,86 @@
-# Task Management API 📝
+# 🚀 TaskMaster Pro: Enterprise Task Management Platform
 
-A production-ready Node.js & Express.js REST API for managing tasks, built for the Node.js Internship Practical (NODEJSIIP-01909).
+TaskMaster Pro is a high-performance, production-level Task Management application built with Node.js, Express, and MongoDB. It features a professional SaaS-style dashboard, full CRUD capabilities, data persistence, and automated unit testing.
 
-## 🚀 Features
+---
 
-- **Create Task**: Add new tasks with a title and description.
-- **View All Tasks**: Retrieve a list of all tasks (newest first).
-- **Mark as Completed**: Toggle task status to completed (with validation).
-- **Edit Task**: Update the title and description of existing tasks.
-- **Delete Task**: Remove tasks from the database.
+## ✨ Enterprise Features
 
-## 🛠️ Tech Stack
+- **Dashboard Intelligence**: Real-time statistics on task progression.
+- **Advanced Task Management**: Create, view, edit, and delete tasks with ease.
+- **Search & Filter**: Instant search by Task Title or Unique ID.
+- **SaaS Aesthetics**: Modern, responsive UI with sidebar navigation and modal interaction.
+- **Persistence Layer**: Robust integration with MongoDB/Mongoose.
+- **Quality Assurance**: Built-in unit tests using Jest and Supertest.
+- **Bonus Capabilities**: Native support for Due Dates and Categories (Work, Urgent, Personal, etc.).
 
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB (via Mongoose)
-- **Environment**: dotenv (for configuration)
+---
 
-## 📁 Project Structure
+## 🛠️ Technical Architecture
 
+### Core Tech Stack
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB / Mongoose
+- **Testing**: Jest, Supertest
+- **Styling**: Modern CSS3 (CSS Variables, Flexbox, Grid)
+
+### Directory Structure
 ```text
 CHAINTECH PRO/
-├── index.js          # Main application file (Server, Database, Routes)
-├── .env              # Configuration (Port, MongoDB URI)
-├── .gitignore        # Ignored files (node_modules, .env)
-├── package.json      # Dependencies and scripts
+├── src/
+│   ├── app.js        # Express Application configuration
+│   ├── server.js     # Entry point for the server
+│   └── seed.js       # Database seeding script for prerequisite data
+├── public/           # Frontend (HTML, CSS, Vanilla JS)
+├── tests/            # Automated Unit Tests
+├── .env              # Environment Configuration
+├── package.json      # Dependencies and Scripts
 └── README.md         # Documentation
 ```
 
-## ⚙️ Setup Instructions
+---
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/DHAIRYA2508/CHAINTECH_DHAIRYABHATT.git
-   cd CHAINTECH_DHAIRYABHATT
-   ```
+## ⚙️ Professional Setup Instructions
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+### 1. Prerequisite
+Ensure you have **Node.js** and **MongoDB** installed and running on your system.
 
-3. **Configure Environment Variables**:
-   Create a `.env` file in the root directory and add:
-   ```text
-   PORT=3000
-   MONGODB_URI=mongodb://localhost:27017/task_manager
-   ```
+### 2. Installation
+```bash
+npm install
+```
 
-4. **Run the application**:
-   ```bash
-   # For production
-   npm start
-   
-   # For development
-   node index.js
-   ```
+### 3. Environment Configuration
+Create a `.env` file in the root directory:
+```text
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/task_manager
+```
 
-## 🛣️ API Endpoints
+### 4. Database Seeding (Crucial)
+To populate the application with professional "Prerequisite" data, run:
+```bash
+node src/seed.js
+```
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/tasks` | Create a new task |
-| `GET` | `/tasks` | Fetch all tasks |
-| `PATCH` | `/tasks/:id/complete` | Mark a task as completed |
-| `PUT` | `/tasks/:id` | Edit a task title/description |
-| `DELETE` | `/tasks/:id` | Delete a task |
+### 5. Running the Platform
+```bash
+# Development / Production
+npm start
+```
 
-## 💡 Key Decisions
+### 6. Running Tests
+```bash
+npm test
+```
 
-- **Single-file Architecture**: Kept the core logic in `index.js` to ensure the project remains simple and easy to understand for beginners, while maintaining production-level error handling and validation.
-- **Validation**: Implemented checks to ensure titles are not empty and tasks cannot be marked completed twice.
-- **Sorting**: Tasks are fetched in descending order (`createdAt: -1`) to show the most recent tasks first.
+---
+
+## 💡 Key Architectural Decisions
+
+1.  **Separation of Concerns**: Refactored logic into `app.js` and `server.js` to allow for clean unit testing without port conflicts.
+2.  **Stateless Frontend**: The UI uses Vanilla JavaScript with the Fetch API to interact with the backend, demonstrating an understanding of asynchronous programming.
+3.  **Validation Middleware**: Implemented server-side validation to ensure data integrity (e.g., titles cannot be empty).
+4.  **UX Focus**: Used a Modal-based workflow for editing to keep the user experience seamless and modern.
+5.  **ID Management**: Every task is assigned a unique MongoDB `ObjectId`, displayed as a ticket number in the UI for a professional feel.
