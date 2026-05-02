@@ -2,17 +2,36 @@ const API_URL = '/tasks';
 let allTasks = [];
 let currentFilter = 'all';
 
-// Initialize
 document.addEventListener('DOMContentLoaded', fetchTasks);
 
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
+
+function setLoading(isLoading) {
+    document.getElementById('loading').style.display = isLoading ? 'block' : 'none';
+}
+
 async function fetchTasks() {
+    setLoading(true);
     try {
         const res = await fetch(API_URL);
+        if (!res.ok) throw new Error('Failed to fetch tasks');
         allTasks = await res.json();
         applyFilterAndSearch();
         updateStats(allTasks);
     } catch (err) {
-        console.error('Failed to fetch tasks', err);
+        showToast(err.message, 'error');
+    } finally {
+        setLoading(false);
     }
 }
 
@@ -24,11 +43,8 @@ function updateStats(tasks) {
 
 function filterBy(filter) {
     currentFilter = filter;
-    
-    // Update Active Link UI
     document.querySelectorAll('.nav-links a').forEach(el => el.classList.remove('active'));
     document.getElementById(`nav-${filter}`).classList.add('active');
-    
     applyFilterAndSearch();
 }
 
@@ -38,24 +54,17 @@ function handleSearch() {
 
 function applyFilterAndSearch() {
     const query = document.getElementById('searchInput').value.toLowerCase();
-    
     let filtered = allTasks;
 
-    // 1. Filter by Status (Sidebar)
-    if (currentFilter === 'pending') {
-        filtered = filtered.filter(t => !t.completed);
-    } else if (currentFilter === 'completed') {
-        filtered = filtered.filter(t => t.completed);
-    }
+    if (currentFilter === 'pending') filtered = filtered.filter(t => !t.completed);
+    else if (currentFilter === 'completed') filtered = filtered.filter(t => t.completed);
 
-    // 2. Filter by Search Query
     if (query) {
         filtered = filtered.filter(task => 
             task.title.toLowerCase().includes(query) || 
             task._id.toLowerCase().includes(query)
         );
     }
-
     renderTasks(filtered);
 }
 
@@ -64,32 +73,35 @@ function renderTasks(tasks) {
     tbody.innerHTML = '';
 
     if (tasks.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 3rem; color: var(--text-muted)">No tasks matching your criteria.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 4rem; color: var(--text-muted)">
+            <i class="fas fa-inbox" style="font-size: 2rem; display: block; margin-bottom: 1rem; opacity: 0.2"></i>
+            No records found.
+        </td></tr>`;
         return;
     }
 
     tasks.forEach(task => {
         const row = document.createElement('tr');
-        const formattedDate = task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No Date';
+        const formattedDate = task.dueDate ? new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '---';
         
         row.innerHTML = `
             <td><span class="task-id">#${task._id.slice(-6)}</span></td>
             <td>
-                <div class="task-title" style="${task.completed ? 'text-decoration: line-through; color: var(--text-muted)' : ''}">${task.title}</div>
-                <div class="task-desc">${task.description || 'N/A'}</div>
+                <div class="task-title" style="${task.completed ? 'text-decoration: line-through; opacity: 0.6' : ''}">${task.title}</div>
+                <div class="task-desc">${task.description || 'No additional data'}</div>
             </td>
             <td><span class="badge badge-${task.category.toLowerCase()}">${task.category}</span></td>
             <td>
                 <span class="status-dot ${task.completed ? 'status-completed' : 'status-pending'}"></span>
-                <span style="font-size: 0.85rem">${task.completed ? 'Completed' : 'Pending'}</span>
+                <span style="font-size: 0.85rem">${task.completed ? 'Completed' : 'Active'}</span>
             </td>
             <td style="font-size: 0.85rem; color: var(--text-muted)">${formattedDate}</td>
             <td class="actions">
-                <button class="action-btn ${task.completed ? 'undo' : ''}" onclick="toggleStatus('${task._id}')" title="${task.completed ? 'Undo' : 'Complete'}">
+                <button class="action-btn" onclick="toggleStatus('${task._id}')" title="${task.completed ? 'Re-open' : 'Complete'}">
                     <i class="fas ${task.completed ? 'fa-rotate-left' : 'fa-check-circle'}" style="color: ${task.completed ? 'var(--warning)' : 'var(--success)'}"></i>
                 </button>
-                <button class="action-btn" onclick="editTask('${task._id}')" title="Edit"><i class="fas fa-edit"></i></button>
-                <button class="action-btn delete" onclick="deleteTask('${task._id}')" title="Delete"><i class="fas fa-trash"></i></button>
+                <button class="action-btn" onclick="editTask('${task._id}')" title="Edit"><i class="fas fa-pen-to-square"></i></button>
+                <button class="action-btn delete" onclick="deleteTask('${task._id}')" title="Remove"><i class="fas fa-trash-can"></i></button>
             </td>
         `;
         tbody.appendChild(row);
@@ -99,28 +111,13 @@ function renderTasks(tasks) {
 async function toggleStatus(id) {
     try {
         const res = await fetch(`${API_URL}/${id}/toggle`, { method: 'PATCH' });
-        if (res.ok) fetchTasks();
+        if (!res.ok) throw new Error('Status update failed');
+        const data = await res.json();
+        showToast(`Task marked as ${data.completed ? 'completed' : 'active'}`);
+        fetchTasks();
     } catch (err) {
-        console.error('Update error', err);
+        showToast(err.message, 'error');
     }
-}
-
-// Modal & Other functions remain similar but updated to call applyFilterAndSearch
-function openModal(editMode = false) {
-    const modal = document.getElementById('taskModal');
-    document.getElementById('modalTitle').textContent = editMode ? 'Edit Task Details' : 'Create New Task';
-    if (!editMode) {
-        document.getElementById('taskId').value = '';
-        document.getElementById('title').value = '';
-        document.getElementById('description').value = '';
-        document.getElementById('category').value = 'Work';
-        document.getElementById('dueDate').value = '';
-    }
-    modal.classList.add('active');
-}
-
-function closeModal() {
-    document.getElementById('taskModal').classList.remove('active');
 }
 
 async function saveTask() {
@@ -132,12 +129,12 @@ async function saveTask() {
         dueDate: document.getElementById('dueDate').value
     };
 
-    if (!taskData.title) return alert('Task title is mandatory.');
+    if (!taskData.title) return showToast('Task title is required', 'error');
 
-    const method = id ? 'PUT' : 'POST';
-    const url = id ? `${API_URL}/${id}` : API_URL;
-
+    setLoading(true);
     try {
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/${id}` : API_URL;
         const res = await fetch(url, {
             method,
             headers: { 'Content-Type': 'application/json' },
@@ -145,38 +142,56 @@ async function saveTask() {
         });
 
         if (res.ok) {
+            showToast(id ? 'Task updated successfully' : 'Task created successfully');
             closeModal();
             fetchTasks();
         } else {
-            const err = await res.json();
-            alert(err.message || 'Operation failed');
+            const errData = await res.json();
+            throw new Error(errData.message || 'Operation failed');
         }
     } catch (err) {
-        console.error('Save error', err);
+        showToast(err.message, 'error');
+    } finally {
+        setLoading(false);
     }
 }
 
 async function deleteTask(id) {
-    if (!confirm('Are you sure you want to delete this task?')) return;
+    if (!confirm('This action cannot be undone. Confirm deletion?')) return;
     try {
         const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        if (res.ok) fetchTasks();
+        if (!res.ok) throw new Error('Deletion failed');
+        showToast('Task removed from system');
+        fetchTasks();
     } catch (err) {
-        console.error('Delete error', err);
+        showToast(err.message, 'error');
     }
+}
+
+// UI Handlers
+function openModal(editMode = false) {
+    document.getElementById('modalTitle').textContent = editMode ? 'Modify Task' : 'Configure New Task';
+    if (!editMode) {
+        document.getElementById('taskId').value = '';
+        document.getElementById('title').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('category').value = 'Work';
+        document.getElementById('dueDate').value = '';
+    }
+    document.getElementById('taskModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('taskModal').classList.remove('active');
 }
 
 async function editTask(id) {
     const task = allTasks.find(t => t._id === id);
     if (!task) return;
-
     document.getElementById('taskId').value = task._id;
     document.getElementById('title').value = task.title;
     document.getElementById('description').value = task.description;
     document.getElementById('category').value = task.category;
-    if (task.dueDate) {
-        document.getElementById('dueDate').value = new Date(task.dueDate).toISOString().split('T')[0];
-    }
-    
+    if (task.dueDate) document.getElementById('dueDate').value = new Date(task.dueDate).toISOString().split('T')[0];
     openModal(true);
 }

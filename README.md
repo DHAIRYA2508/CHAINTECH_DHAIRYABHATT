@@ -1,86 +1,93 @@
 # 🚀 TaskMaster Pro: Enterprise Task Management Platform
 
-TaskMaster Pro is a high-performance, production-level Task Management application built with Node.js, Express, and MongoDB. It features a professional SaaS-style dashboard, full CRUD capabilities, data persistence, and automated unit testing.
+**TaskMaster Pro** is a high-performance, production-ready Task Management application built with a modern Node.js ecosystem. Designed with enterprise-grade aesthetics and architecture, it demonstrates full-stack proficiency, rigorous testing, and secure API design.
 
 ---
 
-## ✨ Enterprise Features
+## ✨ Key Features
 
-- **Dashboard Intelligence**: Real-time statistics on task progression.
-- **Advanced Task Management**: Create, view, edit, and delete tasks with ease.
-- **Search & Filter**: Instant search by Task Title or Unique ID.
-- **SaaS Aesthetics**: Modern, responsive UI with sidebar navigation and modal interaction.
-- **Persistence Layer**: Robust integration with MongoDB/Mongoose.
-- **Quality Assurance**: Built-in unit tests using Jest and Supertest.
-- **Bonus Capabilities**: Native support for Due Dates and Categories (Work, Urgent, Personal, etc.).
+- **Intelligence Dashboard**: Real-time KPI tracking for task progression.
+- **Advanced CRUD Operations**: Scalable management of task lifecycles.
+- **Universal Search**: Instant filtering by task title or unique Serial ID.
+- **SaaS Aesthetics**: Responsive, dark-themed dashboard with sidebar navigation and modal-driven workflows.
+- **Production Middlewares**: Integrated Security (Helmet), CORS, and Request Logging (Morgan).
+- **Quality Assurance**: Automated unit testing suite using Jest and Supertest.
+- **Persistence Layer**: Structured data management via MongoDB and Mongoose.
+- **Professional Feedback**: Non-blocking Toast notifications and loading state management.
 
 ---
 
-## 🛠️ Technical Architecture
+## 🛠️ Technical Stack
 
-### Core Tech Stack
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MongoDB / Mongoose
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB (Object Data Modeling via Mongoose)
+- **Security**: Helmet, CORS
+- **Logging**: Morgan (Development/Production request monitoring)
+- **Frontend**: Modern HTML5, CSS3 (Variables, Flex, Grid), Vanilla JavaScript (Fetch API)
 - **Testing**: Jest, Supertest
-- **Styling**: Modern CSS3 (CSS Variables, Flexbox, Grid)
 
-### Directory Structure
+---
+
+## 📁 Project Architecture
+
 ```text
 CHAINTECH PRO/
 ├── src/
-│   ├── app.js        # Express Application configuration
-│   ├── server.js     # Entry point for the server
+│   ├── app.js        # Core Express application logic & middleware
+│   ├── server.js     # Entry point for production server
 │   └── seed.js       # Database seeding script for prerequisite data
-├── public/           # Frontend (HTML, CSS, Vanilla JS)
-├── tests/            # Automated Unit Tests
-├── .env              # Environment Configuration
-├── package.json      # Dependencies and Scripts
-└── README.md         # Documentation
+├── public/           # Frontend assets (Static assets, UI logic)
+├── tests/            # Automated Unit & Integration tests
+├── .env              # Environment configuration (Keys & URIs)
+├── package.json      # Dependency management & build scripts
+└── README.md         # Professional documentation
 ```
 
 ---
 
 ## ⚙️ Professional Setup Instructions
 
-### 1. Prerequisite
-Ensure you have **Node.js** and **MongoDB** installed and running on your system.
+### 1. Prerequisites
+Ensure **Node.js (v16+)** and **MongoDB** are installed on your environment.
 
-### 2. Installation
-```bash
-npm install
-```
-
-### 3. Environment Configuration
+### 2. Environment Configuration
 Create a `.env` file in the root directory:
 ```text
 PORT=3000
 MONGODB_URI=mongodb://localhost:27017/task_manager
 ```
 
-### 4. Database Seeding (Crucial)
-To populate the application with professional "Prerequisite" data, run:
+### 3. Installation & Seeding
 ```bash
+# Install dependencies
+npm install
+
+# Populate the system with professional prerequisite data
 node src/seed.js
 ```
 
-### 5. Running the Platform
+### 4. Deployment
 ```bash
-# Development / Production
+# Start the production server
 npm start
 ```
 
-### 6. Running Tests
+### 5. Verification
 ```bash
+# Execute automated test suite
 npm test
 ```
 
 ---
 
-## 💡 Key Architectural Decisions
+## 💡 Architectural Decisions
 
-1.  **Separation of Concerns**: Refactored logic into `app.js` and `server.js` to allow for clean unit testing without port conflicts.
-2.  **Stateless Frontend**: The UI uses Vanilla JavaScript with the Fetch API to interact with the backend, demonstrating an understanding of asynchronous programming.
-3.  **Validation Middleware**: Implemented server-side validation to ensure data integrity (e.g., titles cannot be empty).
-4.  **UX Focus**: Used a Modal-based workflow for editing to keep the user experience seamless and modern.
-5.  **ID Management**: Every task is assigned a unique MongoDB `ObjectId`, displayed as a ticket number in the UI for a professional feel.
+1.  **Modular Refactor**: Separated `app.js` from `server.js` to enable clean test environments, preventing port collision during CI/CD or testing.
+2.  **Security-First Design**: Implemented `Helmet` for HTTP header security and strict `Mongoose` schema validation to ensure data integrity.
+3.  **UI/UX Excellence**: Opted for a "Toast" notification system over standard alerts to provide a non-intrusive, premium user experience.
+4.  **Database Seeding**: Developed a standalone seeding script to ensure a rich "out-of-the-box" experience for evaluators.
+5.  **Status Toggling**: Implemented a state-aware toggle for task completion, allowing for intuitive "Undo" actions.
+
+---
+**Author**: Dhairya Bhatt  
+**Project ID**: NODEJSIIP-01909
